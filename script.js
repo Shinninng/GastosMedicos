@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function enviarDatos(datos) {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwxe5tlWFllryZ_2ob6P_t_ALpH3x28MagJz1lKm-WeP_NfHtjA7mDaWXNmYN2FmfuzVg/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxXGOEUkdmN7u1F4LFM_fp-e429TLbrKnOJB8go8Ql-oJFEvCy-EYo5Sd6hVOIvr5ob/exec';
     
     fetch(SCRIPT_URL, {
         method: 'POST',
