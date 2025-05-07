@@ -40,37 +40,38 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 async function enviarDatos(datos) {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxd0sjwNudGCp3oFTaVFcPb4FJoN2trboUT2y8WickkQH3xvaRqGzrb8And3UGPWGcxnQ/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIHIwX_g90j2inURjrdPveJ7FV8b4QxT-TH6WAoolVXk_1kahnh_koXvK4aQfc02qf/exec';
     
     try {
-        // Convertimos los datos a FormData para evitar problemas CORS
-        const formData = new URLSearchParams();
+        // Convertir datos a FormData
+        const formData = new FormData();
         formData.append('familiar', datos.familiar);
         formData.append('monto', datos.monto);
         formData.append('descripcion', datos.descripcion);
         formData.append('fecha', datos.fecha);
         formData.append('timestamp', datos.timestamp);
 
-        // Enviamos como POST con FormData
+        // Enviar como POST
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
-            body: formData,
+            body: new URLSearchParams(formData),
             redirect: 'follow'
         });
 
-        // Verificamos si la respuesta fue exitosa
+        // Verificar respuesta
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status}`);
         }
 
-        // Intentamos parsear la respuesta
         const result = await response.json();
         
-        if (result && result.success) {
+        if (result.success) {
             mostrarMensaje('✅ Gasto registrado con éxito', 'exito');
             document.getElementById('gastoForm').reset();
+            // Restablecer fecha actual
+            document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
         } else {
-            throw new Error(result.message || 'Respuesta inválida del servidor');
+            throw new Error(result.message || 'Error del servidor');
         }
     } catch (error) {
         console.error('Error completo:', error);
