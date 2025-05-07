@@ -40,46 +40,41 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 async function enviarDatos(datos) {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwia_lky8W4j-HeN-BjxeUydx836GxwaOtZt2A_LXVap7zRsput0DlSmw3OyNOxPmxyqg/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxd0sjwNudGCp3oFTaVFcPb4FJoN2trboUT2y8WickkQH3xvaRqGzrb8And3UGPWGcxnQ/exec';
     
     try {
-        // Intento con POST primero
+        // Convertimos los datos a FormData para evitar problemas CORS
+        const formData = new URLSearchParams();
+        formData.append('familiar', datos.familiar);
+        formData.append('monto', datos.monto);
+        formData.append('descripcion', datos.descripcion);
+        formData.append('fecha', datos.fecha);
+        formData.append('timestamp', datos.timestamp);
+
+        // Enviamos como POST con FormData
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(datos),
-            redirect: 'manual' // Importante para evitar CORS
+            body: formData,
+            redirect: 'follow'
         });
 
-        // Si hay redirección (comportamiento normal de Apps Script)
-        if (response.type === 'opaqueredirect') {
-            // Segundo intento sin headers para evitar preflight
-            const simpleResponse = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: new URLSearchParams(datos).toString(),
-                redirect: 'manual'
-            });
-            
-            if (simpleResponse.type === 'opaqueredirect') {
-                mostrarMensaje('✅ Gasto registrado con éxito', 'exito');
-                document.getElementById('gastoForm').reset();
-                return;
-            }
-            throw new Error('Error en redirección');
+        // Verificamos si la respuesta fue exitosa
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
         }
 
+        // Intentamos parsear la respuesta
         const result = await response.json();
-        if (result.success) {
+        
+        if (result && result.success) {
             mostrarMensaje('✅ Gasto registrado con éxito', 'exito');
             document.getElementById('gastoForm').reset();
         } else {
-            throw new Error(result.message);
+            throw new Error(result.message || 'Respuesta inválida del servidor');
         }
     } catch (error) {
-        console.error('Error en POST:', error);
-        mostrarMensaje('❌ Error al registrar. Intenta recargar la página.', 'error');
+        console.error('Error completo:', error);
+        mostrarMensaje(`❌ Error al registrar: ${error.message}`, 'error');
     } finally {
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = false;
