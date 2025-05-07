@@ -40,26 +40,31 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function enviarDatos(datos) {
-    // URL de tu Web App de Google Apps Script
-    // Reemplaza esto con tu URL después de implementar el backend
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwxe5tlWFllryZ_2ob6P_t_ALpH3x28MagJz1lKm-WeP_NfHtjA7mDaWXNmYN2FmfuzVg/exec'
-        
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwxe5tlWFllryZ_2ob6P_t_ALpH3x28MagJz1lKm-WeP_NfHtjA7mDaWXNmYN2FmfuzVg/exec';
+    
     fetch(SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(datos)
     })
-    .then(() => {
-        mostrarMensaje('Gasto registrado con éxito!', 'exito');
-        document.getElementById('gastoForm').reset();
-        document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+    .then(response => {
+        if (!response.ok) throw new Error('Error en la red');
+        return response.text(); // Cambiado a text() porque no-cors no permite json()
+    })
+    .then(text => {
+        try {
+            const data = JSON.parse(text);
+            mostrarMensaje(data.message || 'Gasto registrado con éxito!', 'exito');
+            document.getElementById('gastoForm').reset();
+        } catch {
+            mostrarMensaje('Gasto registrado con éxito!', 'exito');
+        }
     })
     .catch(error => {
         console.error('Error:', error);
-        mostrarMensaje('Hubo un error al registrar el gasto. Por favor intenta nuevamente.', 'error');
+        mostrarMensaje('Hubo un error al registrar el gasto: ' + error.message, 'error');
     })
     .finally(() => {
         const submitBtn = document.getElementById('submitBtn');
