@@ -39,12 +39,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-async function enviarDatos(datos) {
+  async function enviarDatos(datos) {
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIHIwX_g90j2inURjrdPveJ7FV8b4QxT-TH6WAoolVXk_1kahnh_koXvK4aQfc02qf/exec';
     
     try {
         // Convertir datos a FormData
-        const formData = new FormData();
+        const formData = new URLSearchParams();
         formData.append('familiar', datos.familiar);
         formData.append('monto', datos.monto);
         formData.append('descripcion', datos.descripcion);
@@ -52,30 +52,23 @@ async function enviarDatos(datos) {
         formData.append('timestamp', datos.timestamp);
 
         // Enviar como POST
-        const response = await fetch(SCRIPT_URL, {
+        const response = await fetch(`${SCRIPT_URL}?${formData.toString()}`, {
             method: 'POST',
-            body: new URLSearchParams(formData),
             redirect: 'follow'
         });
 
-        // Verificar respuesta
-        if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
-        }
-
-        const result = await response.json();
-        
-        if (result.success) {
+        // Verificar si la redirección fue exitosa
+        if (response.redirected) {
             mostrarMensaje('✅ Gasto registrado con éxito', 'exito');
             document.getElementById('gastoForm').reset();
-            // Restablecer fecha actual
             document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
-        } else {
-            throw new Error(result.message || 'Error del servidor');
+            return;
         }
+
+        throw new Error('Error en el servidor');
     } catch (error) {
         console.error('Error completo:', error);
-        mostrarMensaje(`❌ Error al registrar: ${error.message}`, 'error');
+        mostrarMensaje('❌ Error al registrar. Intenta nuevamente.', 'error');
     } finally {
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = false;
@@ -98,7 +91,7 @@ function mostrarMensaje(texto, tipo) {
 // Función adicional para probar la conexión
 async function probarConexion() {
     try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbwia_lky8W4j-HeN-BjxeUydx836GxwaOtZt2A_LXVap7zRsput0DlSmw3OyNOxPmxyqg/exec', {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbzIHIwX_g90j2inURjrdPveJ7FV8b4QxT-TH6WAoolVXk_1kahnh_koXvK4aQfc02qf/exec', {
             method: 'OPTIONS'
         });
         console.log('Prueba de conexión OPTIONS:', response);
