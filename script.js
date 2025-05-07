@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 async function enviarDatos(datos) {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwtwfn8Olc0PvegK30lLHDr3BWmw1S5TTVgZ0dmEqDSiA8hSbky0RcUR88XiOz-TSYhyA/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwia_lky8W4j-HeN-BjxeUydx836GxwaOtZt2A_LXVap7zRsput0DlSmw3OyNOxPmxyqg/exec';
     
     try {
         // Intento con POST primero
@@ -102,7 +102,7 @@ function mostrarMensaje(texto, tipo) {
 // Función adicional para probar la conexión
 async function probarConexion() {
     try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbwtwfn8Olc0PvegK30lLHDr3BWmw1S5TTVgZ0dmEqDSiA8hSbky0RcUR88XiOz-TSYhyA/exec', {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbwia_lky8W4j-HeN-BjxeUydx836GxwaOtZt2A_LXVap7zRsput0DlSmw3OyNOxPmxyqg/exec', {
             method: 'OPTIONS'
         });
         console.log('Prueba de conexión OPTIONS:', response);
