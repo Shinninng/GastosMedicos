@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Gastos Médicos Familiares</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Registro de Gastos Médicos</h1>
+        <form id="gastoForm">
+            <div class="form-group">
+                <label for="familiar">Familiar:</label>
+                <select id="familiar" required>
+                    <option value="" disabled selected>Selecciona un familiar</option>
+                    <option value="Padre">Daniel Silvestri</option>
+                    <option value="Madre">Liliana Bruna</option>
+                    <option value="Hijo">Lucia Silvestri</option>
+                    <option value="Hija">Juan Silvestri</option>
+                    <option value="Abuelo">Tiziano Silvestri</option>
+                    <option value="Abuela">Tomas Silvestri</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="monto">Monto ($):</label>
+                <input type="number" id="monto" min="0" step="0.01" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" rows="3" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="fecha">Fecha:</label>
+                <input type="date" id="fecha" required>
+            </div>
+            
+            <button type="submit" id="submitBtn">Registrar Gasto</button>
+        </form>
+        
+        <div id="mensaje" class="mensaje"></div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
