@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
  
     
     function enviarDatos(datos) {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxXGOEUkdmN7u1F4LFM_fp-e429TLbrKnOJB8go8Ql-oJFEvCy-EYo5Sd6hVOIvr5ob/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyvpzL_sKK8J8MPhyoiIDJgjhM5n5k7dPBNID2Uvske3taeecbv3NlY_-mef5bgRhZyLg/exec';
     
     fetch(SCRIPT_URL, {
         method: 'POST',
