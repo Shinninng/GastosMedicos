@@ -39,40 +39,75 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
- 
+async function enviarDatos(datos) {
+    // URL actualizada con tu nuevo enlace de Apps Script
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwtwfn8Olc0PvegK30lLHDr3BWmw1S5TTVgZ0dmEqDSiA8hSbky0RcUR88XiOz-TSYhyA/exec';
     
-    function enviarDatos(datos) {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyvpzL_sKK8J8MPhyoiIDJgjhM5n5k7dPBNID2Uvske3taeecbv3NlY_-mef5bgRhZyLg/exec';
-    
-    fetch(SCRIPT_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(datos)
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Error en el servidor');
-        return response.text();
-    })
-    .then(text => {
-        try {
-            const data = JSON.parse(text);
-            mostrarMensaje(data.message || '✅ Gasto registrado con éxito', 'exito');
-            document.getElementById('gastoForm').reset();
-        } catch {
-            mostrarMensaje('✅ Gasto registrado con éxito', 'exito');
+    try {
+        // 1. Primero probamos con POST (método preferido)
+        console.log('Intentando enviar datos via POST...');
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(datos),
+            redirect: 'follow' // Importante para Google Apps Script
+        });
+
+        // Verificar si la respuesta fue exitosa
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
         }
-    })
-    .catch(error => {
-        console.error('Error detallado:', error);
-        mostrarMensaje('❌ Error al registrar: ' + error.message, 'error');
-    })
-    .finally(() => {
+
+        // Procesar la respuesta
+        const result = await response.json();
+        console.log('Respuesta del servidor:', result);
+        
+        if (result.success) {
+            mostrarMensaje('✅ Gasto registrado con éxito', 'exito');
+            document.getElementById('gastoForm').reset();
+            // Restablecer la fecha actual
+            document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+        } else {
+            throw new Error(result.message || 'Error desconocido del servidor');
+        }
+        
+    } catch (postError) {
+        console.error('Error en POST:', postError);
+        
+        // 2. Si POST falla, intentamos con GET como respaldo
+        try {
+            console.log('Intentando método GET como alternativa...');
+            const params = new URLSearchParams();
+            params.append('familiar', datos.familiar);
+            params.append('monto', datos.monto);
+            params.append('descripcion', datos.descripcion);
+            params.append('fecha', datos.fecha);
+            
+            const getResponse = await fetch(`${SCRIPT_URL}?${params.toString()}`);
+            
+            if (!getResponse.ok) {
+                throw new Error(`Error GET HTTP: ${getResponse.status}`);
+            }
+            
+            const getResult = await getResponse.json();
+            console.log('Respuesta GET del servidor:', getResult);
+            
+            mostrarMensaje('✅ Gasto registrado (vía alternativa)', 'exito');
+            document.getElementById('gastoForm').reset();
+            document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+            
+        } catch (getError) {
+            console.error('Error en GET alternativo:', getError);
+            mostrarMensaje(`❌ Error al registrar: ${postError.message}`, 'error');
+        }
+    } finally {
+        // Rehabilitar el botón sin importar el resultado
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = false;
         submitBtn.textContent = 'Registrar Gasto';
-    });
+    }
 }
 
 function mostrarMensaje(texto, tipo) {
@@ -86,3 +121,23 @@ function mostrarMensaje(texto, tipo) {
         mensajeDiv.className = 'mensaje';
     }, 5000);
 }
+
+// Función adicional para probar la conexión
+async function probarConexion() {
+    try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbwtwfn8Olc0PvegK30lLHDr3BWmw1S5TTVgZ0dmEqDSiA8hSbky0RcUR88XiOz-TSYhyA/exec', {
+            method: 'OPTIONS'
+        });
+        console.log('Prueba de conexión OPTIONS:', response);
+        return response.ok;
+    } catch (error) {
+        console.error('Error en prueba de conexión:', error);
+        return false;
+    }
+}
+
+// Ejecutar prueba de conexión al cargar la página (opcional)
+window.addEventListener('load', async () => {
+    const conexionOk = await probarConexion();
+    console.log('Prueba de conexión:', conexionOk ? '✅ Exitosa' : '❌ Fallida');
+});
