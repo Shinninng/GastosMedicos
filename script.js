@@ -40,70 +40,47 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 async function enviarDatos(datos) {
-    // URL actualizada con tu nuevo enlace de Apps Script
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwtwfn8Olc0PvegK30lLHDr3BWmw1S5TTVgZ0dmEqDSiA8hSbky0RcUR88XiOz-TSYhyA/exec';
     
     try {
-        // 1. Primero probamos con POST (método preferido)
-        console.log('Intentando enviar datos via POST...');
+        // Intento con POST primero
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(datos),
-            redirect: 'follow' // Importante para Google Apps Script
+            redirect: 'manual' // Importante para evitar CORS
         });
 
-        // Verificar si la respuesta fue exitosa
-        if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
+        // Si hay redirección (comportamiento normal de Apps Script)
+        if (response.type === 'opaqueredirect') {
+            // Segundo intento sin headers para evitar preflight
+            const simpleResponse = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: new URLSearchParams(datos).toString(),
+                redirect: 'manual'
+            });
+            
+            if (simpleResponse.type === 'opaqueredirect') {
+                mostrarMensaje('✅ Gasto registrado con éxito', 'exito');
+                document.getElementById('gastoForm').reset();
+                return;
+            }
+            throw new Error('Error en redirección');
         }
 
-        // Procesar la respuesta
         const result = await response.json();
-        console.log('Respuesta del servidor:', result);
-        
         if (result.success) {
             mostrarMensaje('✅ Gasto registrado con éxito', 'exito');
             document.getElementById('gastoForm').reset();
-            // Restablecer la fecha actual
-            document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
         } else {
-            throw new Error(result.message || 'Error desconocido del servidor');
+            throw new Error(result.message);
         }
-        
-    } catch (postError) {
-        console.error('Error en POST:', postError);
-        
-        // 2. Si POST falla, intentamos con GET como respaldo
-        try {
-            console.log('Intentando método GET como alternativa...');
-            const params = new URLSearchParams();
-            params.append('familiar', datos.familiar);
-            params.append('monto', datos.monto);
-            params.append('descripcion', datos.descripcion);
-            params.append('fecha', datos.fecha);
-            
-            const getResponse = await fetch(`${SCRIPT_URL}?${params.toString()}`);
-            
-            if (!getResponse.ok) {
-                throw new Error(`Error GET HTTP: ${getResponse.status}`);
-            }
-            
-            const getResult = await getResponse.json();
-            console.log('Respuesta GET del servidor:', getResult);
-            
-            mostrarMensaje('✅ Gasto registrado (vía alternativa)', 'exito');
-            document.getElementById('gastoForm').reset();
-            document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
-            
-        } catch (getError) {
-            console.error('Error en GET alternativo:', getError);
-            mostrarMensaje(`❌ Error al registrar: ${postError.message}`, 'error');
-        }
+    } catch (error) {
+        console.error('Error en POST:', error);
+        mostrarMensaje('❌ Error al registrar. Intenta recargar la página.', 'error');
     } finally {
-        // Rehabilitar el botón sin importar el resultado
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = false;
         submitBtn.textContent = 'Registrar Gasto';
