@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function enviarDatos(datos) {
     // URL de tu Web App de Google Apps Script
     // Reemplaza esto con tu URL después de implementar el backend
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzmY2zTDEoEjy4BfDCKXr2O9CO7RyyYQhyhn2m4XhkHOipGvsILlenCOeBZH8GRSDieEg/exec'
+    const SCRIPT_URL = 'Hhttps://script.google.com/macros/s/AKfycbzmY2zTDEoEjy4BfDCKXr2O9CO7RyyYQhyhn2m4XhkHOipGvsILlenCOeBZH8GRSDieEg/exec'
         
     fetch(SCRIPT_URL, {
         method: 'POST',
