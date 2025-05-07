@@ -39,32 +39,34 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function enviarDatos(datos) {
+ 
+    
+    function enviarDatos(datos) {
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxXGOEUkdmN7u1F4LFM_fp-e429TLbrKnOJB8go8Ql-oJFEvCy-EYo5Sd6hVOIvr5ob/exec';
     
     fetch(SCRIPT_URL, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(datos)
     })
     .then(response => {
-        if (!response.ok) throw new Error('Error en la red');
-        return response.text(); // Cambiado a text() porque no-cors no permite json()
+        if (!response.ok) throw new Error('Error en el servidor');
+        return response.text();
     })
     .then(text => {
         try {
             const data = JSON.parse(text);
-            mostrarMensaje(data.message || 'Gasto registrado con éxito!', 'exito');
+            mostrarMensaje(data.message || '✅ Gasto registrado con éxito', 'exito');
             document.getElementById('gastoForm').reset();
         } catch {
-            mostrarMensaje('Gasto registrado con éxito!', 'exito');
+            mostrarMensaje('✅ Gasto registrado con éxito', 'exito');
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        mostrarMensaje('Hubo un error al registrar el gasto: ' + error.message, 'error');
+        console.error('Error detallado:', error);
+        mostrarMensaje('❌ Error al registrar: ' + error.message, 'error');
     })
     .finally(() => {
         const submitBtn = document.getElementById('submitBtn');
