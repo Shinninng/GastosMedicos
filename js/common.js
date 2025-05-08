@@ -89,3 +89,6 @@ function initMonthFilter(selectElement) {
         return html + `<option value="${mes}">${mes}</option>`;
     }, '<option value="">Todos los meses</option>');
 }
+export function initializeApp() {
+    // Puedes agregar inicializaciones comunes aquí si es necesario
+}
