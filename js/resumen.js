@@ -33,40 +33,72 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Funciones específicas de resumen
 async function loadData() {
-    try {
-        console.log('Cargando datos...');
-        const response = await fetch(`${SCRIPT_URL}?action=getResumen`);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Datos recibidos:', data);
-        
-        if (data.error) {
-            throw new Error(data.error);
-        }
-        
-        if (!Array.isArray(data)) {
-            throw new Error('Formato de datos inesperado');
-        }
-        
-        displaySummary(filterData(data));
-        
-    } catch (error) {
-        console.error('Error al cargar datos:', error);
-        showError('Error al cargar los datos. Ver consola para detalles.');
-        
-        // Intento alternativo para diagnóstico
-        try {
-            const testResponse = await fetch(`${SCRIPT_URL}?action=getResumen`);
-            const testText = await testResponse.text();
-            console.log('Respuesta cruda:', testText);
-        } catch (e) {
-            console.error('Error en prueba alternativa:', e);
-        }
+  try {
+    console.log("[1] Iniciando carga de datos...");
+    const startTime = Date.now();
+    
+    // 1. Intento de carga normal
+    const response = await fetch(`${SCRIPT_URL}?action=getResumen`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      }
+    });
+    
+    console.log("[2] Respuesta recibida en", Date.now() - startTime, "ms");
+    
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
     }
+    
+    // 2. Verificación de contenido
+    const textData = await response.text();
+    console.log("[3] Datos crudos:", textData.substring(0, 100) + (textData.length > 100 ? "..." : ""));
+    
+    const data = JSON.parse(textData);
+    
+    if (data.error) {
+      throw new Error(data.error);
+    }
+    
+    if (!Array.isArray(data)) {
+      throw new Error("Formato de datos inválido");
+    }
+    
+    console.log("[4] Datos parseados correctamente. Total:", data.length);
+    
+    // 3. Procesamiento
+    displaySummary(data);
+    
+  } catch (error) {
+    console.error("Error en loadData:", error);
+    
+    // Intento alternativo con enfoque diferente
+    try {
+      console.log("Intentando método alternativo...");
+      const altResponse = await fetch(`${SCRIPT_URL}?action=getResumen&alt=1`);
+      const altText = await altResponse.text();
+      console.log("Respuesta alternativa:", altText.substring(0, 200));
+      
+      // Intento de parseo seguro
+      let altData;
+      try {
+        altData = JSON.parse(altText);
+      } catch (e) {
+        altData = { error: "No se pudo parsear la respuesta" };
+      }
+      
+      if (Array.isArray(altData)) {
+        displaySummary(altData);
+      } else {
+        showError(`Error grave: ${altData.error || 'Formato desconocido'}`);
+      }
+    } catch (altError) {
+      showError("Error crítico al cargar datos. Ver consola para detalles.");
+      console.error("Error en método alternativo:", altError);
+    }
+  }
 }
 
 function filterData(data) {
