@@ -1,3 +1,4 @@
+console.log("Script cargado correctamente");
 import { 
     MESES, 
     groupData, 
