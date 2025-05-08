@@ -4,7 +4,7 @@ export const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
 export const PERSONAS_ESPECIALES = ['Maria Jose', 'Carolina'];
 
 // FUNCIONES UTILITARIAS
-function groupData(data) {
+export function groupData(data) {
     return data.reduce((acc, item) => {
         const key = `${item.familiar}-${item.mes}`;
         if (!acc[key]) {
@@ -21,14 +21,14 @@ function groupData(data) {
     }, {});
 }
 
-function sortData(groupedData) {
+export function sortData(groupedData) {
     return Object.values(groupedData).sort((a, b) => 
         a.familiar.localeCompare(b.familiar) || 
         MESES.indexOf(a.mes) - MESES.indexOf(b.mes)
     );
 }
 
-function generateSummaryHTML(data) {
+export function generateSummaryHTML(data) {
     return data.map(item => `
         <div class="summary-card">
             <div class="summary-header">
@@ -43,7 +43,7 @@ function generateSummaryHTML(data) {
     `).join('');
 }
 
-function showDetails(details) {
+export function showDetails(details) {
     const detailsHTML = `
         <h3>Detalles de Gastos</h3>
         <table class="details-table">
@@ -78,13 +78,13 @@ function showDetails(details) {
     document.body.appendChild(modal);
 }
 
-function showError(container, message) {
+export function showError(container, message) {
     container.innerHTML = `
         <div class="error-message">${message}</div>
     `;
 }
 
-function initMonthFilter(selectElement) {
+export function initMonthFilter(selectElement) {
     selectElement.innerHTML = MESES.reduce((html, mes) => {
         return html + `<option value="${mes}">${mes}</option>`;
     }, '<option value="">Todos los meses</option>');

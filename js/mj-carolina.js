@@ -10,7 +10,7 @@ import {
 } from './common.js';
 
 // Configuración
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEpKHnuP4oFrHTOUwkwfCMX5KUmfv70-QeVu-Rj3rDIsEv_5HgLvLtytjn8NqHFsiq/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbb7sLk49iVIIBQ3As7egMQYQHmJuFm0fNC-OoX5aymNam1tWCVVJLv_YvU722GUcb/exec';
 
 // Elementos del DOM
 const elements = {
