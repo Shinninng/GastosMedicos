@@ -52,39 +52,36 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Método infalible para enviar datos
 async function enviarDatos(datos) {
-    return new Promise((resolve) => {
-        // 1. Crear iframe oculto
-        const iframe = document.createElement('iframe');
-        iframe.name = 'hidden-iframe';
-        iframe.style.display = 'none';
-        
-        // 2. Crear formulario temporal
-        const form = document.createElement('form');
-        form.method = 'GET';
-        form.action = `https://script.google.com/macros/s/AKfycbyKtWqXmptCFdIG3Z6Vun5MImnW2TY9eOcIsZc9Sbo7vyJADmrVfyW1THh-y1zCXH5McA/exec?${
-            new URLSearchParams({
-                familiar: datos.familiar,
-                monto: parseFloat(datos.monto).toFixed(2),
-                descripcion: datos.descripcion || '',
-                fecha: datos.fecha || new Date().toISOString().split('T')[0]
-            })
-        }`;
-        form.target = 'hidden-iframe';
-        
-        // 3. Manejador de carga
-        iframe.onload = () => {
-            resolve({ success: true });
-            document.body.removeChild(iframe);
-            document.body.removeChild(form);
-        };
-        
-        // 4. Adjuntar y enviar
-        document.body.appendChild(iframe);
-        document.body.appendChild(form);
-        form.submit();
+  return new Promise((resolve) => {
+    const iframe = document.createElement('iframe');
+    iframe.name = 'hidden-iframe';
+    iframe.style.display = 'none';
+    
+    const form = document.createElement('form');
+    form.method = 'POST'; // Cambiado a POST
+    form.action = `https://script.google.com/macros/s/AKfycbwUlLjcaygD6ecRxaQzKUx6i6oLPhPbeA2Z1gNK-hL-t0Eg5jin-x1pMtzrRVBOL6n9UA/exec`;
+    form.target = 'hidden-iframe';
+
+    // Agregar datos como campos ocultos
+    Object.entries(datos).forEach(([key, value]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = value;
+      form.appendChild(input);
     });
+
+    iframe.onload = () => {
+      resolve({ success: true });
+      document.body.removeChild(iframe);
+      document.body.removeChild(form);
+    };
+
+    document.body.appendChild(iframe);
+    document.body.appendChild(form);
+    form.submit();
+  });
 }
 
 function mostrarMensaje(texto, tipo) {
