@@ -9,7 +9,7 @@ import {
     initMonthFilter 
 } from './common.js';
 
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynm3VLv57bGqfpcr_ftxCQyCfqIqRFkhkRCVtcdTvA2cIm4YsyD_GU2wHQCX0uuitT/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw27b1Ig5TfxuGd2VQ4hyEcZCSd8OP1D-GHtOIc1nNWEkW579syyBGXgQHKjhu8stT-/exec';
 
 const elements = {
     monthFilter: document.getElementById('month-filter'),
