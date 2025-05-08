@@ -40,39 +40,42 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 async function enviarDatos(datos) {
-  // 1. Validación básica
-  if (!datos.familiar || !datos.monto) {
-    console.error('Error: Faltan campos requeridos');
-    return { success: false, error: 'Faltan familiar o monto' };
+
+   if (!datos.familiar || !datos.monto) {
+    console.error('Error: Campos requeridos faltantes');
+    return { success: false };
   }
 
-  // 2. Formateo de parámetros
   const params = new URLSearchParams({
     familiar: datos.familiar,
     monto: parseFloat(datos.monto).toFixed(2),
     descripcion: datos.descripcion || '',
-    fecha: datos.fecha || new Date().toISOString().split('T')[0]
+    fecha: datos.fecha || new Date().toISOString().split('T')[0],
+    timestamp: Date.now() // Evita caché
   });
 
-  // 3. URL final (¡usa tu ID de script!)
-  const SCRIPT_ID = 'AKfycbw27b1Ig5TfxuGd2VQ4hyEcZCSd8OP1D-GHtOIc1nNWEkW579syyBGXgQHKjhu8stT';
+  const SCRIPT_ID = 'AKfycbzoAG5RvsWkgKyXxy1zcqbq9GVUEjHGVXOz0gRGMa-pZTgrvYfTSs10KVUDFqwmqhPNPQ';
   const url = `https://script.google.com/macros/s/${SCRIPT_ID}/exec?${params}`;
 
   try {
-    // 4. Envío con manejo de errores mejorado
-    const response = await fetch(url, {
-      method: 'GET',
-      redirect: 'manual',
-      mode: 'no-cors'
+      await fetch(url, {
+        method: 'GET',
+        mode: 'no-cors',
+        credentials: 'omit'
     });
 
-    // 5. Feedback al usuario
+      await new Promise((resolve) => {
+        const img = new Image();
+        img.src = url;
+        img.onload = img.onerror = resolve;
+    });
+
     console.log('Datos enviados a Google Sheets:', datos);
     return { success: true };
     
   } catch (error) {
     console.warn('Error visible en consola (pero los datos probablemente se enviaron):', error);
-    return { success: true }; // Asumimos éxito a pesar de CORS
+    return { success: true }; 
   }
 }
 
