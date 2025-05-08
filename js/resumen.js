@@ -34,12 +34,38 @@ document.addEventListener('DOMContentLoaded', () => {
 // Funciones específicas de resumen
 async function loadData() {
     try {
+        console.log('Cargando datos...');
         const response = await fetch(`${SCRIPT_URL}?action=getResumen`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('Datos recibidos:', data);
+        
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        
+        if (!Array.isArray(data)) {
+            throw new Error('Formato de datos inesperado');
+        }
+        
         displaySummary(filterData(data));
+        
     } catch (error) {
-        console.error('Error:', error);
-        showError(elements.summaryContainer, 'Error al cargar los datos. Intenta nuevamente.');
+        console.error('Error al cargar datos:', error);
+        showError('Error al cargar los datos. Ver consola para detalles.');
+        
+        // Intento alternativo para diagnóstico
+        try {
+            const testResponse = await fetch(`${SCRIPT_URL}?action=getResumen`);
+            const testText = await testResponse.text();
+            console.log('Respuesta cruda:', testText);
+        } catch (e) {
+            console.error('Error en prueba alternativa:', e);
+        }
     }
 }
 
