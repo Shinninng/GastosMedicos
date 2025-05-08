@@ -1,118 +1,99 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Configura la fecha actual por defecto
+    // Configuración inicial
     const fechaInput = document.getElementById('fecha');
-    const today = new Date().toISOString().split('T')[0];
-    fechaInput.value = today;
+    fechaInput.value = new Date().toISOString().split('T')[0];
     
-    // Manejar el envío del formulario
+    // Manejo del formulario
     const form = document.getElementById('gastoForm');
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        const familiar = document.getElementById('familiar').value;
-        const monto = document.getElementById('monto').value;
-        const descripcion = document.getElementById('descripcion').value;
-        const fecha = document.getElementById('fecha').value;
+        // Obtener valores
+        const datos = {
+            familiar: document.getElementById('familiar').value.trim(),
+            monto: document.getElementById('monto').value,
+            descripcion: document.getElementById('descripcion').value.trim(),
+            fecha: document.getElementById('fecha').value
+        };
         
-        // Validación simple
-        if (!familiar || !monto || !descripcion || !fecha) {
-            mostrarMensaje('Por favor completa todos los campos', 'error');
+        // Validación mejorada
+        if (!datos.familiar || !datos.monto) {
+            mostrarMensaje('Nombre y monto son obligatorios', 'error');
             return;
         }
         
-        // Deshabilitar el botón para evitar múltiples envíos
+        if (isNaN(parseFloat(datos.monto))) {
+            mostrarMensaje('El monto debe ser un número válido', 'error');
+            return;
+        }
+        
+        // Deshabilitar botón
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = true;
         submitBtn.textContent = 'Enviando...';
         
-        // Preparar los datos para enviar
-        const datos = {
-            familiar: familiar,
-            monto: parseFloat(monto).toFixed(2),
-            descripcion: descripcion,
-            fecha: fecha,
-            timestamp: new Date().toISOString()
-        };
-        
-        // Enviar datos a Google Sheets
-        enviarDatos(datos);
+        try {
+            // Enviar datos
+            const resultado = await enviarDatos(datos);
+            
+            if (resultado.success) {
+                mostrarMensaje('Datos guardados exitosamente', 'success');
+                form.reset(); // Limpiar formulario
+            } else {
+                mostrarMensaje(resultado.error || 'Error al enviar datos', 'error');
+            }
+        } catch (error) {
+            mostrarMensaje('Error de conexión', 'error');
+            console.error('Error:', error);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Enviar';
+        }
     });
 });
 
+// Método infalible para enviar datos
 async function enviarDatos(datos) {
-
-   if (!datos.familiar || !datos.monto) {
-    console.error('Error: Campos requeridos faltantes');
-    return { success: false };
-  }
-
-  const params = new URLSearchParams({
-    familiar: datos.familiar,
-    monto: parseFloat(datos.monto).toFixed(2),
-    descripcion: datos.descripcion || '',
-    fecha: datos.fecha || new Date().toISOString().split('T')[0],
-    timestamp: Date.now() // Evita caché
-  });
-
-  const SCRIPT_ID = 'AKfycbzoAG5RvsWkgKyXxy1zcqbq9GVUEjHGVXOz0gRGMa-pZTgrvYfTSs10KVUDFqwmqhPNPQ';
-  const url = `https://script.google.com/macros/s/${SCRIPT_ID}/exec?${params}`;
-
-  try {
-      await fetch(url, {
-        method: 'GET',
-        mode: 'no-cors',
-        credentials: 'omit'
+    return new Promise((resolve) => {
+        // 1. Crear iframe oculto
+        const iframe = document.createElement('iframe');
+        iframe.name = 'hidden-iframe';
+        iframe.style.display = 'none';
+        
+        // 2. Crear formulario temporal
+        const form = document.createElement('form');
+        form.method = 'GET';
+        form.action = `https://script.google.com/macros/s/AKfycbyKtWqXmptCFdIG3Z6Vun5MImnW2TY9eOcIsZc9Sbo7vyJADmrVfyW1THh-y1zCXH5McA/exec?${
+            new URLSearchParams({
+                familiar: datos.familiar,
+                monto: parseFloat(datos.monto).toFixed(2),
+                descripcion: datos.descripcion || '',
+                fecha: datos.fecha || new Date().toISOString().split('T')[0]
+            })
+        }`;
+        form.target = 'hidden-iframe';
+        
+        // 3. Manejador de carga
+        iframe.onload = () => {
+            resolve({ success: true });
+            document.body.removeChild(iframe);
+            document.body.removeChild(form);
+        };
+        
+        // 4. Adjuntar y enviar
+        document.body.appendChild(iframe);
+        document.body.appendChild(form);
+        form.submit();
     });
-
-      await new Promise((resolve) => {
-        const img = new Image();
-        img.src = url;
-        img.onload = img.onerror = resolve;
-    });
-
-    console.log('Datos enviados a Google Sheets:', datos);
-    return { success: true };
-    
-  } catch (error) {
-    console.warn('Error visible en consola (pero los datos probablemente se enviaron):', error);
-    return { success: true }; 
-  }
 }
 
 function mostrarMensaje(texto, tipo) {
     const mensajeDiv = document.getElementById('mensaje');
     mensajeDiv.textContent = texto;
-    mensajeDiv.className = 'mensaje ' + tipo;
+    mensajeDiv.className = `mensaje ${tipo}`;
     
-    // Ocultar el mensaje después de 5 segundos
     setTimeout(() => {
         mensajeDiv.textContent = '';
         mensajeDiv.className = 'mensaje';
     }, 5000);
 }
-
-// Función adicional para probar la conexión
-async function probarConexion() {
-    try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbwPJiI5nfd3CpTRHVEsWJrx9gDH97v6VDUKTJZ5HcO8C5fM_gLcylQip3VhnxKXdSSC/exec', {
-            method: 'OPTIONS'
-        });
-        console.log('Prueba de conexión OPTIONS:', response);
-        return response.ok;
-    } catch (error) {
-        console.error('Error en prueba de conexión:', error);
-        return false;
-    }
-}
-
-// Ejecutar prueba de conexión al cargar la página (opcional)
-window.addEventListener('load', async () => {
-    const conexionOk = await probarConexion();
-    console.log('Prueba de conexión:', conexionOk ? '✅ Exitosa' : '❌ Fallida');
-});
-
-// enviarDatos({
-//    familiar: 'Prueba',
-//    monto: '100',
-//    descripcion: 'Test desde consola'
-//  }).then(console.log);
