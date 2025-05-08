@@ -1,4 +1,3 @@
-console.log("Script cargado correctamente");
 document.addEventListener('DOMContentLoaded', function() {
     // Configura la fecha actual por defecto
     const fechaInput = document.getElementById('fecha');
@@ -41,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
   async function enviarDatos(datos) {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXuWmVX27pOHgLqRzuPXW078vzxlj31JxDf0qD6V4LF9PmZcFUxmLcMesCXRvrlMUM/exec';
+    const SCRIPT_URL = 'hhttps://script.google.com/macros/s/AKfycbyEpKHnuP4oFrHTOUwkwfCMX5KUmfv70-QeVu-Rj3rDIsEv_5HgLvLtytjn8NqHFsiq/exec';
     
     try {
         // Convertir datos a FormData
@@ -92,7 +91,7 @@ function mostrarMensaje(texto, tipo) {
 // Función adicional para probar la conexión
 async function probarConexion() {
     try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbyXuWmVX27pOHgLqRzuPXW078vzxlj31JxDf0qD6V4LF9PmZcFUxmLcMesCXRvrlMUM/exec', {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbyEpKHnuP4oFrHTOUwkwfCMX5KUmfv70-QeVu-Rj3rDIsEv_5HgLvLtytjn8NqHFsiq/exec', {
             method: 'OPTIONS'
         });
         console.log('Prueba de conexión OPTIONS:', response);

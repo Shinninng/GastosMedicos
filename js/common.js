@@ -1,7 +1,7 @@
 // CONSTANTES COMPARTIDAS
-const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
-               'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-const PERSONAS_ESPECIALES = ['Maria Jose', 'Carolina'];
+export const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+export const PERSONAS_ESPECIALES = ['Maria Jose', 'Carolina'];
 
 // FUNCIONES UTILITARIAS
 function groupData(data) {

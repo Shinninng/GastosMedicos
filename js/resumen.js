@@ -1,6 +1,6 @@
-console.log("Script cargado correctamente");
 import { 
     MESES, 
+    PERSONAS_ESPECIALES,
     groupData, 
     sortData, 
     generateSummaryHTML, 
@@ -10,7 +10,7 @@ import {
 } from './common.js';
 
 // Configuración
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXuWmVX27pOHgLqRzuPXW078vzxlj31JxDf0qD6V4LF9PmZcFUxmLcMesCXRvrlMUM/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEpKHnuP4oFrHTOUwkwfCMX5KUmfv70-QeVu-Rj3rDIsEv_5HgLvLtytjn8NqHFsiq/exec';
 
 // Elementos del DOM
 const elements = {
@@ -31,54 +31,33 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.resetBtn.addEventListener('click', resetFilters);
 });
 
-// Funciones específicas de resumen
 async function loadData() {
-  try {
-    console.log('Iniciando carga de datos...');
-    const response = await fetch(`${SCRIPT_URL}?action=getResumen&cachebuster=${Date.now()}`);
-    
-    if (!response.ok) {
-      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    try {
+        console.log('Cargando datos...');
+        const timestamp = new Date().getTime();
+        const response = await fetch(`${SCRIPT_URL}?action=getResumen&nocache=${timestamp}`);
+        
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('Datos recibidos:', result);
+        
+        if (result.error) {
+            throw new Error(result.error);
+        }
+        
+        if (!Array.isArray(result)) {
+            throw new Error('Formato de datos inválido');
+        }
+        
+        displaySummary(result);
+        
+    } catch (error) {
+        console.error('Error:', error);
+        showError(`Error al cargar datos: ${error.message}`);
     }
-    
-    const result = await response.json();
-    
-    // Verificación profunda de datos
-    if (result.error) {
-      throw new Error(result.error);
-    }
-    
-    if (!Array.isArray(result)) {
-      throw new Error('Formato de respuesta inválido');
-    }
-    
-    console.log('Datos recibidos:', result);
-    
-    // Procesamiento seguro
-    const datosFiltrados = result.filter(item => 
-      item.fecha && item.familiar && !isNaN(item.monto)
-    );
-    
-    if (datosFiltrados.length === 0 && result.length > 0) {
-      console.warn('Todos los datos fueron filtrados:', result);
-    }
-    
-    displaySummary(datosFiltrados);
-    
-  } catch (error) {
-    console.error('Error al cargar datos:', error);
-    showError(`Error: ${error.message}. Ver consola para detalles.`);
-    
-    // Datos de prueba para diagnóstico
-    const datosPrueba = [{
-      fecha: new Date().toISOString().split('T')[0],
-      familiar: 'Maria Jose',
-      monto: 1000,
-      descripcion: 'Prueba fallback',
-      mes: 'Mayo'
-    }];
-    displaySummary(datosPrueba);
-  }
 }
 
 function filterData(data) {

@@ -1,4 +1,3 @@
-console.log("Script cargado correctamente");
 import { 
     MESES, 
     PERSONAS_ESPECIALES,
@@ -11,7 +10,7 @@ import {
 } from './common.js';
 
 // Configuración
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXuWmVX27pOHgLqRzuPXW078vzxlj31JxDf0qD6V4LF9PmZcFUxmLcMesCXRvrlMUM/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEpKHnuP4oFrHTOUwkwfCMX5KUmfv70-QeVu-Rj3rDIsEv_5HgLvLtytjn8NqHFsiq/exec';
 
 // Elementos del DOM
 const elements = {
