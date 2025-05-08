@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen de Gastos Familiares</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Resumen de Gastos Familiares</h1>
+        
+        <div class="filtros">
+            <select id="filtroMes">
+                <option value="">Todos los meses</option>
+                <option value="Enero">Enero</option>
+                <option value="Febrero">Febrero</option>
+                <!-- Agrega los demás meses -->
+            </select>
+            
+            <select id="filtroFamiliar">
+                <option value="">Todos los familiares</option>
+                <option value="Padre">Padre</option>
+                <option value="Madre">Madre</option>
+                <!-- Agrega los demás familiares -->
+            </select>
+            
+            <button id="aplicarFiltros">Aplicar Filtros</button>
+            <button id="resetFiltros">Resetear</button>
+        </div>
+        
+        <div class="resumen-container">
+            <table id="tablaResumen">
+                <thead>
+                    <tr>
+                        <th>Familiar</th>
+                        <th>Mes</th>
+                        <th>Total Gastado</th>
+                        <th>Detalles</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Los datos se cargarán aquí con JavaScript -->
+                </tbody>
+            </table>
+            
+            <div id="totalGeneral" class="total" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <script src="resumen.js"></script>
+</body>
+</html>
