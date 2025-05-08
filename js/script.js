@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
   async function enviarDatos(datos) {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzF2TsmFc6PiHw_pJzsc6auvzE7pXBoD8baWyXkl_nrAG4GxH2eDAnruY-AKxmNozbz/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbydcXI7kB_2R7pYYO5N4TzL0ZmnDzvcdN6y3VzooTjrpVBS5mhlqzgrOEUkZoP4tYzR/exec';
     
     try {
         // Convertir datos a FormData
@@ -92,7 +92,7 @@ function mostrarMensaje(texto, tipo) {
 // Función adicional para probar la conexión
 async function probarConexion() {
     try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbzF2TsmFc6PiHw_pJzsc6auvzE7pXBoD8baWyXkl_nrAG4GxH2eDAnruY-AKxmNozbz/exec', {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbydcXI7kB_2R7pYYO5N4TzL0ZmnDzvcdN6y3VzooTjrpVBS5mhlqzgrOEUkZoP4tYzR/exec', {
             method: 'OPTIONS'
         });
         console.log('Prueba de conexión OPTIONS:', response);
