@@ -1,5 +1,6 @@
 import { 
     MESES, 
+    PERSONAS_ESPECIALES,
     groupData, 
     sortData, 
     generateSummaryHTML, 
@@ -16,41 +17,40 @@ const elements = {
     monthFilter: document.getElementById('month-filter'),
     applyBtn: document.getElementById('apply-filter'),
     summaryContainer: document.getElementById('summary-container'),
-    filterMJCarolina: document.getElementById('filter-mj-carolina'),
     resetBtn: document.getElementById('reset-filters')
 };
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', () => {
     initMonthFilter(elements.monthFilter);
-    loadData();
+    loadSpecialData();
     
-    elements.applyBtn.addEventListener('click', loadData);
-    elements.filterMJCarolina.addEventListener('click', filterBySpecialPersons);
+    elements.applyBtn.addEventListener('click', loadSpecialData);
     elements.resetBtn.addEventListener('click', resetFilters);
 });
 
-// Funciones específicas de resumen
-async function loadData() {
+// Funciones específicas para MJ y Carolina
+async function loadSpecialData() {
     try {
         const response = await fetch(`${SCRIPT_URL}?action=getResumen`);
         const data = await response.json();
-        displaySummary(filterData(data));
+        
+        // Filtrar solo las personas especiales
+        const filtered = data.filter(item => 
+            PERSONAS_ESPECIALES.includes(item.familiar)
+        );
+        
+        // Aplicar filtro de mes si existe
+        const selectedMonth = elements.monthFilter.value;
+        const finalData = selectedMonth 
+            ? filtered.filter(item => item.mes === selectedMonth)
+            : filtered;
+        
+        displaySummary(finalData);
     } catch (error) {
         console.error('Error:', error);
         showError(elements.summaryContainer, 'Error al cargar los datos. Intenta nuevamente.');
     }
-}
-
-function filterData(data) {
-    let filtered = data;
-    const selectedMonth = elements.monthFilter.value;
-    
-    if (selectedMonth) {
-        filtered = filtered.filter(item => item.mes === selectedMonth);
-    }
-    
-    return filtered;
 }
 
 function displaySummary(data) {
@@ -61,22 +61,9 @@ function displaySummary(data) {
     addDetailsEventListeners();
 }
 
-function filterBySpecialPersons() {
-    fetch(`${SCRIPT_URL}?action=getResumen`)
-        .then(response => response.json())
-        .then(data => {
-            const filtered = data.filter(item => 
-                PERSONAS_ESPECIALES.includes(item.familiar)
-            );
-            displaySummary(filtered);
-            elements.monthFilter.value = ''; 
-        })
-        .catch(error => showError(elements.summaryContainer, error.message));
-}
-
 function resetFilters() {
     elements.monthFilter.value = '';
-    loadData();
+    loadSpecialData();
 }
 
 function addDetailsEventListeners() {
