@@ -39,42 +39,24 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-  async function enviarDatos(datos) {
-    const SCRIPT_URL = 'hhttps://script.google.com/macros/s/AKfycbwPJiI5nfd3CpTRHVEsWJrx9gDH97v6VDUKTJZ5HcO8C5fM_gLcylQip3VhnxKXdSSC/exec';
-    
+async function enviarDatos(datos) {
     try {
-        // Convertir datos a FormData
-        const formData = new URLSearchParams();
-        formData.append('familiar', datos.familiar);
-        formData.append('monto', datos.monto);
-        formData.append('descripcion', datos.descripcion);
-        formData.append('fecha', datos.fecha);
-        formData.append('timestamp', datos.timestamp);
-
-        // Enviar como POST
-        const response = await fetch(`${SCRIPT_URL}?${formData.toString()}`, {
-            method: 'POST',
-            redirect: 'follow'
-        });
-
-        // Verificar si la redirección fue exitosa
-        if (response.redirected) {
-            mostrarMensaje('✅ Gasto registrado con éxito', 'exito');
-            document.getElementById('gastoForm').reset();
-            document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
-            return;
-        }
-
-        throw new Error('Error en el servidor');
+      const response = await fetch('https://script.google.com/macros/s/AKfycbynm3VLv57bGqfpcr_ftxCQyCfqIqRFkhkRCVtcdTvA2cIm4YsyD_GU2wHQCX0uuitT/exec', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams(datos).toString(),
+        redirect: 'follow'
+      });
+  
+      if (!response.ok) throw new Error('Error en la respuesta');
+      return await response.json();
     } catch (error) {
-        console.error('Error completo:', error);
-        mostrarMensaje('❌ Error al registrar. Intenta nuevamente.', 'error');
-    } finally {
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Registrar Gasto';
+      console.error('Error completo:', error);
+      throw error;
     }
-}
+  }
 
 function mostrarMensaje(texto, tipo) {
     const mensajeDiv = document.getElementById('mensaje');
@@ -91,7 +73,7 @@ function mostrarMensaje(texto, tipo) {
 // Función adicional para probar la conexión
 async function probarConexion() {
     try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbwPJiI5nfd3CpTRHVEsWJrx9gDH97v6VDUKTJZ5HcO8C5fM_gLcylQip3VhnxKXdSSC/exec', {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbynm3VLv57bGqfpcr_ftxCQyCfqIqRFkhkRCVtcdTvA2cIm4YsyD_GU2wHQCX0uuitT/exec', {
             method: 'OPTIONS'
         });
         console.log('Prueba de conexión OPTIONS:', response);
