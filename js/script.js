@@ -1,3 +1,4 @@
+console.log("Script cargado correctamente");
 document.addEventListener('DOMContentLoaded', function() {
     // Configura la fecha actual por defecto
     const fechaInput = document.getElementById('fecha');
