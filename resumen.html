@@ -4,50 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resumen de Gastos Familiares</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/resumen.css">
 </head>
 <body>
     <div class="container">
-        <h1>Resumen de Gastos Familiares</h1>
+        <a href="index.html" class="back-btn">← Volver al Registro</a>
+        <h1>Resumen de Gastos</h1>
         
-        <div class="filtros">
-            <select id="filtroMes">
+        <div class="filters">
+            <label for="month-filter">Mes</label>
+            <select id="month-filter">
                 <option value="">Todos los meses</option>
                 <option value="Enero">Enero</option>
                 <option value="Febrero">Febrero</option>
-                <!-- Agrega los demás meses -->
+                <option value="Marzo">Marzo</option>
+                <option value="Abril">Abril</option>
+                <option value="Mayo">Mayo</option>
+                <option value="Junio">Junio</option>
+                <option value="Julio">Julio</option>
+                <option value="Agosto">Agosto</option>
+                <option value="Septiembre">Septiembre</option>
+                <option value="Octubre">Octubre</option>
+                <option value="Noviembre">Noviembre</option>
+                <option value="Diciembre">Diciembre</option>
             </select>
             
-            <select id="filtroFamiliar">
-                <option value="">Todos los familiares</option>
-                <option value="Padre">Padre</option>
-                <option value="Madre">Madre</option>
-                <!-- Agrega los demás familiares -->
-            </select>
-            
-            <button id="aplicarFiltros">Aplicar Filtros</button>
-            <button id="resetFiltros">Resetear</button>
+            <button id="apply-filter">Aplicar Filtro</button>
         </div>
         
-        <div class="resumen-container">
-            <table id="tablaResumen">
-                <thead>
-                    <tr>
-                        <th>Familiar</th>
-                        <th>Mes</th>
-                        <th>Total Gastado</th>
-                        <th>Detalles</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Los datos se cargarán aquí con JavaScript -->
-                </tbody>
-            </table>
-            
-            <div id="totalGeneral" class="total" style="margin-top: 20px;"></div>
+        <div id="summary-container">
         </div>
     </div>
 
-    <script src="resumen.js"></script>
+    <script src="js/resumen.js"></script>
 </body>
 </html>
