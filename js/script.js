@@ -51,20 +51,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
 async function enviarDatos(datos) {
   return new Promise((resolve) => {
+    // 1. Crear contenedor seguro
+    const container = document.createElement('div');
+    container.style.display = 'none';
+    document.body.appendChild(container);
+
+    // 2. Crear iframe y formulario
     const iframe = document.createElement('iframe');
-    iframe.name = 'hidden-iframe';
-    iframe.style.display = 'none';
+    iframe.name = 'hidden-iframe-' + Date.now();
     
     const form = document.createElement('form');
-    form.method = 'POST'; // Cambiado a POST
-    form.action = `https://script.google.com/macros/s/AKfycbwUlLjcaygD6ecRxaQzKUx6i6oLPhPbeA2Z1gNK-hL-t0Eg5jin-x1pMtzrRVBOL6n9UA/exec`;
-    form.target = 'hidden-iframe';
+    form.method = 'POST';
+    form.action = 'https://script.google.com/macros/s/AKfycbwUlLjcaygD6ecRxaQzKUx6i6oLPhPbeA2Z1gNK-hL-t0Eg5jin-x1pMtzrRVBOL6n9UA/exec';
+    form.target = iframe.name;
 
-    // Agregar datos como campos ocultos
-    Object.entries(datos).forEach(([key, value]) => {
+    // 3. Agregar campos
+    Object.entries({
+      ...datos,
+      monto: parseFloat(datos.monto).toFixed(2),
+      fecha: datos.fecha || new Date().toISOString().split('T')[0]
+    }).forEach(([key, value]) => {
       const input = document.createElement('input');
       input.type = 'hidden';
       input.name = key;
@@ -72,18 +80,33 @@ async function enviarDatos(datos) {
       form.appendChild(input);
     });
 
-    iframe.onload = () => {
-      resolve({ success: true });
-      document.body.removeChild(iframe);
-      document.body.removeChild(form);
+    // 4. Manejador de carga mejorado
+    iframe.onload = function() {
+      try {
+        container.remove();
+        resolve({ success: true });
+      } catch (e) {
+        console.log('Elementos ya removidos');
+        resolve({ success: true });
+      }
     };
 
-    document.body.appendChild(iframe);
-    document.body.appendChild(form);
+    // 5. Adjuntar y enviar
+    container.appendChild(iframe);
+    container.appendChild(form);
     form.submit();
+
+    // 6. Timeout de seguridad
+    setTimeout(() => {
+      try {
+        container.remove();
+        resolve({ success: true });
+      } catch (e) {
+        resolve({ success: true });
+      }
+    }, 3000);
   });
 }
-
 function mostrarMensaje(texto, tipo) {
     const mensajeDiv = document.getElementById('mensaje');
     mensajeDiv.textContent = texto;
