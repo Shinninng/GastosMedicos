@@ -81,8 +81,8 @@ async function enviarDatos(datos) {
 
     // 3. Crear formulario
     const form = document.createElement('form');
-    form.method = 'GET';
-    form.action = `https://script.google.com/macros/s/AKfycbwNI0LVPhenOVo7bzzpmuZeReQDzjieaSz4UqLZOXRV1HHpjyrkLNrYIYT6-vso-7mD3w/exec?${new URLSearchParams({
+    form.method = 'GET'; 
+    form.action = `https://script.google.com/macros/s/${AKfycbwNI0LVPhenOVo7bzzpmuZeReQDzjieaSz4UqLZOXRV1HHpjyrkLNrYIYT6-vso-7mD3w}/exec?{new URLSearchParams({
       familiar: datos.familiar,
       monto: parseFloat(datos.monto).toFixed(2),
       descripcion: datos.descripcion || '',
