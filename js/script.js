@@ -82,7 +82,7 @@ async function enviarDatos(datos) {
     // 3. Crear formulario (CORRECCIÓN AQUÍ)
     const form = document.createElement('form');
     form.method = 'GET';
-    form.action = `https://script.google.com/macros/s/AKfycbwNI0LVPhenOVo7bzzpmuZeReQDzjieaSz4UqLZOXRV1HHpjyrkLNrYIYT6-vso-7mD3w/exec?${new URLSearchParams({
+    form.action = `https://script.google.com/macros/s/AKfycbzW_QTKcoHPVawE9QB0SAkxahp1NyPJnm9na1MKU1i1wO0mhCEeZrrObq4ictvW0aIQKQ/exec?${new URLSearchParams({
       familiar: datos.familiar,
       monto: parseFloat(datos.monto).toFixed(2),
       descripcion: datos.descripcion || '',
