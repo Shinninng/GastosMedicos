@@ -53,57 +53,43 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 async function enviarDatos(datos) {
   return new Promise((resolve) => {
-    // 1. Crear contenedor seguro
     const container = document.createElement('div');
     container.style.display = 'none';
     document.body.appendChild(container);
 
-    // 2. Crear iframe y formulario
     const iframe = document.createElement('iframe');
     iframe.name = 'hidden-iframe-' + Date.now();
     
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = 'https://script.google.com/macros/s/AKfycbwUlLjcaygD6ecRxaQzKUx6i6oLPhPbeA2Z1gNK-hL-t0Eg5jin-x1pMtzrRVBOL6n9UA/exec';
+    form.action = 'https://script.google.com/macros/s/AKfycbwqyZhfpAAr0AgZZNBZ067rtZEA0DpBWfzby69cRg5L2a_RJjaSScEd-xqoS2ul0PBpcA/exec';
     form.target = iframe.name;
+    form.enctype = 'application/json'; // ← Cambio clave
 
-    // 3. Agregar campos
-    Object.entries({
-      ...datos,
+    // Convertir datos a JSON
+    const jsonInput = document.createElement('input');
+    jsonInput.type = 'hidden';
+    jsonInput.name = 'data';
+    jsonInput.value = JSON.stringify({
+      familiar: datos.familiar,
       monto: parseFloat(datos.monto).toFixed(2),
+      descripcion: datos.descripcion || '',
       fecha: datos.fecha || new Date().toISOString().split('T')[0]
-    }).forEach(([key, value]) => {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = value;
-      form.appendChild(input);
     });
+    form.appendChild(jsonInput);
 
-    // 4. Manejador de carga mejorado
-    iframe.onload = function() {
-      try {
-        container.remove();
-        resolve({ success: true });
-      } catch (e) {
-        console.log('Elementos ya removidos');
-        resolve({ success: true });
-      }
+    iframe.onload = () => {
+      container.remove();
+      resolve({ success: true });
     };
 
-    // 5. Adjuntar y enviar
     container.appendChild(iframe);
     container.appendChild(form);
     form.submit();
 
-    // 6. Timeout de seguridad
     setTimeout(() => {
-      try {
-        container.remove();
-        resolve({ success: true });
-      } catch (e) {
-        resolve({ success: true });
-      }
+      container.remove();
+      resolve({ success: true });
     }, 3000);
   });
 }
