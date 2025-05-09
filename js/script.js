@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 async function enviarDatos(datos) {
   return new Promise((resolve) => {
-    // 1. Crear contenedor permanente (solo una vez)
+    // 1. Crear contenedor permanente
     let formContainer = document.getElementById('form-container');
     if (!formContainer) {
       formContainer = document.createElement('div');
@@ -74,15 +74,15 @@ async function enviarDatos(datos) {
       document.body.appendChild(formContainer);
     }
 
-    // 2. Crear iframe con ID único
+    // 2. Crear iframe
     const iframe = document.createElement('iframe');
     iframe.name = `hidden-iframe-${Date.now()}`;
     iframe.style.display = 'none';
 
-    // 3. Crear formulario
+    // 3. Crear formulario (CORRECCIÓN AQUÍ)
     const form = document.createElement('form');
-    form.method = 'GET'; 
-    form.action = `https://script.google.com/macros/s/${AKfycbwNI0LVPhenOVo7bzzpmuZeReQDzjieaSz4UqLZOXRV1HHpjyrkLNrYIYT6-vso-7mD3w}/exec?{new URLSearchParams({
+    form.method = 'GET';
+    form.action = `https://script.google.com/macros/s/AKfycbwNI0LVPhenOVo7bzzpmuZeReQDzjieaSz4UqLZOXRV1HHpjyrkLNrYIYT6-vso-7mD3w/exec?${new URLSearchParams({
       familiar: datos.familiar,
       monto: parseFloat(datos.monto).toFixed(2),
       descripcion: datos.descripcion || '',
@@ -90,17 +90,14 @@ async function enviarDatos(datos) {
     })}`;
     form.target = iframe.name;
 
-    // 4. Adjuntar elementos AL CONTENEDOR PRIMERO
+    // 4. Adjuntar elementos
     formContainer.appendChild(iframe);
     formContainer.appendChild(form);
 
-    // 5. Manejador de carga seguro
-    iframe.onload = () => {
-      resolve({ success: true });
-      // No remover los elementos, se reutilizan
-    };
+    // 5. Manejador de carga
+    iframe.onload = () => resolve({ success: true });
 
-    // 6. Enviar formulario
+    // 6. Enviar
     form.submit();
 
     // Timeout de respaldo
