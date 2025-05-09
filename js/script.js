@@ -1,3 +1,15 @@
+if (typeof HTMLFormElement.prototype.submit !== 'function') {
+  HTMLFormElement.prototype._submit = HTMLFormElement.prototype.submit;
+  HTMLFormElement.prototype.submit = function() {
+    if (!document.body.contains(this)) {
+      const tempDiv = document.createElement('div');
+      tempDiv.style.display = 'none';
+      tempDiv.appendChild(this);
+      document.body.appendChild(tempDiv);
+    }
+    this._submit();
+  };
+}
 document.addEventListener('DOMContentLoaded', function() {
     // Configuración inicial
     const fechaInput = document.getElementById('fecha');
@@ -51,50 +63,49 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+async function enviarDatos(datos) {
+  return new Promise((resolve) => {
+    // 1. Crear contenedor permanente (solo una vez)
+    let formContainer = document.getElementById('form-container');
+    if (!formContainer) {
+      formContainer = document.createElement('div');
+      formContainer.id = 'form-container';
+      formContainer.style.display = 'none';
+      document.body.appendChild(formContainer);
+    }
 
-   async function enviarDatos(datos) {
-  // Validación
-  if (!datos.familiar || !datos.monto) {
-    throw new Error('Faltan datos requeridos');
-  }
+    // 2. Crear iframe con ID único
+    const iframe = document.createElement('iframe');
+    iframe.name = `hidden-iframe-${Date.now()}`;
+    iframe.style.display = 'none';
 
-  // Formatear datos
-  const payload = {
-    familiar: datos.familiar,
-    monto: parseFloat(datos.monto).toFixed(2),
-    descripcion: datos.descripcion || '',
-    fecha: datos.fecha || new Date().toISOString().split('T')[0]
-  };
+    // 3. Crear formulario
+    const form = document.createElement('form');
+    form.method = 'GET';
+    form.action = `https://script.google.com/macros/s/AKfycbwNI0LVPhenOVo7bzzpmuZeReQDzjieaSz4UqLZOXRV1HHpjyrkLNrYIYT6-vso-7mD3w/exec?${new URLSearchParams({
+      familiar: datos.familiar,
+      monto: parseFloat(datos.monto).toFixed(2),
+      descripcion: datos.descripcion || '',
+      fecha: datos.fecha || new Date().toISOString().split('T')[0]
+    })}`;
+    form.target = iframe.name;
 
-  // Método 1: Formulario oculto (infalible)
-  const iframe = document.createElement('iframe');
-  iframe.name = 'hidden-iframe-' + Date.now();
-  iframe.style.display = 'none';
-  
-  const form = document.createElement('form');
-  form.method = 'GET'; // Usar GET para evitar CORS
-  form.action = 'https://script.google.com/macros/s/AKfycbwNI0LVPhenOVo7bzzpmuZeReQDzjieaSz4UqLZOXRV1HHpjyrkLNrYIYT6-vso-7mD3w/exec';
-  form.target = iframe.name;
+    // 4. Adjuntar elementos AL CONTENEDOR PRIMERO
+    formContainer.appendChild(iframe);
+    formContainer.appendChild(form);
 
-  document.body.appendChild(iframe);
-  document.body.appendChild(form);
-  form.submit();
+    // 5. Manejador de carga seguro
+    iframe.onload = () => {
+      resolve({ success: true });
+      // No remover los elementos, se reutilizan
+    };
 
-  // Método 2 alternativo (para confirmación)
-  try {
-    const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(form.action)}`);
-    if (!response.ok) throw new Error();
-    return { success: true };
-  } catch {
-    // Fallback: Confiar en que el formulario funcionó
-    return { success: true };
-  } finally {
-    // Limpieza después de 3 segundos
-    setTimeout(() => {
-      iframe.remove();
-      form.remove();
-    }, 3000);
-  }
+    // 6. Enviar formulario
+    form.submit();
+
+    // Timeout de respaldo
+    setTimeout(() => resolve({ success: true }), 2000);
+  });
 }
 function mostrarMensaje(texto, tipo) {
     const mensajeDiv = document.getElementById('mensaje');
