@@ -4,6 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Resumen Específico por Persona</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="resumen-especifico.js"></script>
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
@@ -47,8 +48,8 @@
                 <option value="Juan Silvestri">Juan Silvestri</option>
                 <option value="Tiziano Silvestri">Tiziano Silvestri</option>
                 <option value="Tomas Silvestri">Tomas Silvestri</option>
-                <option value="María José Silvestri">María José Silvestri</option>
-                <option value="Carolina Silvestri">Carolina Silvestri</option>
+                <option value="María José">María José</option>
+                <option value="Carolina">Carolina</option>
                 </select>
         <button
           type="submit"
@@ -85,131 +86,7 @@
   </main>
 
   <footer class="bg-white shadow-inner p-4 text-center text-gray-500 text-sm">
-    &copy; 2024 Gestor de Gastos
+    &copy; 2025 Gestor de Gastos
   </footer>
-
-  <script src="js/common.js"></script>
-  <script src="js/resumen-especifico.js"></script>
-  <script>
-    // js/resumen-especifico.js content inline for demo (normally separate file)
-    (() => {
-      const tablaResumen = document.getElementById('tablaResumen');
-      const filtroForm = document.getElementById('filtroForm');
-      const integranteSelect = document.getElementById('integrante');
-      const mensajeError = document.getElementById('mensajeError');
-      const errorIntegrante = document.getElementById('errorIntegrante');
-
-      const meses = [
-        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-      ];
-
-      // Obtener datos desde Google Apps Script backend
-      // Se espera que el backend devuelva un array de objetos con:
-      // { mes: "Abril", integrante: "Ana", monto: "1500.00", descripcion: "..." }
-      async function obtenerDatos() {
-        try {
-          // Cambiar URL por la del Google Apps Script desplegado que devuelve todos los registros
-          const response = await fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec');
-          if (!response.ok) throw new Error('Error al obtener datos del servidor');
-          const data = await response.json();
-          return data;
-        } catch (error) {
-          throw error;
-        }
-      }
-
-      // Procesar datos para un integrante, sumando montos por mes
-      function procesarDatosPorIntegrante(data, integrante) {
-        const agrupado = {};
-
-        meses.forEach((mes) => {
-          agrupado[mes] = 0;
-        });
-
-        data.forEach((item) => {
-          if (
-            item.integrante === integrante &&
-            item.mes &&
-            !isNaN(parseFloat(item.monto))
-          ) {
-            agrupado[item.mes] = (agrupado[item.mes] || 0) + parseFloat(item.monto);
-          }
-        });
-
-        return agrupado;
-      }
-
-      // Renderizar tabla con meses y totales
-      function renderizarTabla(agrupado) {
-        tablaResumen.innerHTML = '';
-        const mesesConGasto = Object.entries(agrupado).filter(([_, monto]) => monto > 0);
-
-        if (mesesConGasto.length === 0) {
-          tablaResumen.innerHTML = `
-            <tr>
-              <td colspan="2" class="text-center py-6 text-gray-400 italic">No hay gastos registrados para este integrante.</td>
-            </tr>
-          `;
-          return;
-        }
-
-        meses.forEach((mes) => {
-          const monto = agrupado[mes] || 0;
-          if (monto > 0) {
-            const tr = document.createElement('tr');
-            tr.className = 'border-t border-indigo-200 hover:bg-indigo-50 transition';
-
-            const tdMes = document.createElement('td');
-            tdMes.className = 'py-3 px-4 border border-indigo-200 font-medium';
-            tdMes.textContent = mes;
-
-            const tdMonto = document.createElement('td');
-            tdMonto.className = 'py-3 px-4 border border-indigo-200 font-semibold text-indigo-700';
-            tdMonto.textContent = monto.toFixed(2);
-
-            tr.appendChild(tdMes);
-            tr.appendChild(tdMonto);
-            tablaResumen.appendChild(tr);
-          }
-        });
-      }
-
-      async function cargarResumenPorIntegrante(integrante) {
-        mensajeError.classList.add('hidden');
-        errorIntegrante.classList.add('hidden');
-        tablaResumen.innerHTML = `
-          <tr>
-            <td colspan="2" class="text-center py-6 text-gray-400 italic">Cargando datos...</td>
-          </tr>
-        `;
-        try {
-          const datos = await obtenerDatos();
-          const agrupado = procesarDatosPorIntegrante(datos, integrante);
-          renderizarTabla(agrupado);
-        } catch (error) {
-          tablaResumen.innerHTML = '';
-          mensajeError.textContent = error.message || 'Error desconocido al cargar datos.';
-          mensajeError.classList.remove('hidden');
-        }
-      }
-
-      filtroForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const integrante = integranteSelect.value;
-        if (!integrante) {
-          errorIntegrante.classList.remove('hidden');
-          tablaResumen.innerHTML = `
-            <tr>
-              <td colspan="2" class="text-center py-6 text-gray-400 italic">Seleccione un integrante para ver el resumen.</td>
-            </tr>
-          `;
-          return;
-        }
-        errorIntegrante.classList.add('hidden');
-        cargarResumenPorIntegrante(integrante);
-      });
-    })();
-  </script>
 </body>
 </html>
