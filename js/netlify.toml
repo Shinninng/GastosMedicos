@@ -1,0 +1,16 @@
+[build]
+  command = "echo 'Building...'"
+  publish = "."  # Directorio donde están tus archivos HTML/JS
+
+[build.environment]
+  # Variables de construcción (opcional)
+  NODE_ENV = "production"
+
+[context.production.environment]
+  FIREBASE_API_KEY = "AIzaSyDFgYZwc7gZuBfombUYQ9mMVa6gfkJVGs4"
+  FIREBASE_AUTH_DOMAIN = "gestordegastos-afff6.firebaseapp.com"
+  FIREBASE_PROJECT_ID = "gestordegastos-afff6"
+  FIREBASE_STORAGE_BUCKET = "gestordegastos-afff6.firebasestorage.app"
+  FIREBASE_MESSAGING_SENDER_ID = "993733253098"
+  FIREBASE_APP_ID = "1:993733253098:web:070c9b105504d13f818493"
+  FIREBASE_MEASUREMENT_ID = "G-JV0VLQ3P5Y"
