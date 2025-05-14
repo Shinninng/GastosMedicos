@@ -1,6 +1,6 @@
 // registro.js
 import { db } from './firebase-config.js';
-import { ref, push, set } from "firebase/database";
+import { ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 import { getCurrentMonthName } from './common.js';
 
 document.addEventListener('DOMContentLoaded', () => {

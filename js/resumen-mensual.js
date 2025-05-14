@@ -1,5 +1,5 @@
 // resumen-mensual.js
-import { MESES, obtenerDatosFirebase } from './common.js'; // common.js ya importa db
+import { MESES, obtenerDatosFirebase } from './common.js'; 
 
 document.addEventListener('DOMContentLoaded', () => {
     const tablaResumen = document.getElementById('tablaResumen');

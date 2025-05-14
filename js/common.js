@@ -1,5 +1,5 @@
 // common.js
-import { ref, get } from "firebase/database"; // Importa funciones de Firebase
+import { ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 import { db } from './firebase-config.js'; // Importa la instancia 'db'
 
 const MESES = [
