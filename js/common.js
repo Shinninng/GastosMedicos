@@ -1,6 +1,6 @@
 // common.js
 import { ref, get } from "firebase/database"; // Importa funciones de Firebase
-import { db } from '.firebase-config.js'; // Importa la instancia 'db'
+import { db } from './firebase-config.js'; // Importa la instancia 'db'
 
 const MESES = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
